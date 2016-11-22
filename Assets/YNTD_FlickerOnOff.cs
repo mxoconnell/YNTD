@@ -27,7 +27,7 @@ public class YNTD_FlickerOnOff : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        InvokeRepeating("Flicker", 0.0f, 0.9f); // Starting [2nd parameter] seconds, repeating every [3rd parameter] seconds
+        InvokeRepeating("Flicker", 4.0f, 0.9f); // Starting [2nd parameter] seconds, repeating every [3rd parameter] seconds
     }
 
     void Flicker()
