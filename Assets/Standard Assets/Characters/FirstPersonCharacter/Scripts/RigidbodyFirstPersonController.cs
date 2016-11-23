@@ -4,10 +4,15 @@ using UnityStandardAssets.CrossPlatformInput;
 
 namespace UnityStandardAssets.Characters.FirstPerson
 {
+    
     [RequireComponent(typeof (Rigidbody))]
     [RequireComponent(typeof (CapsuleCollider))]
+    
     public class RigidbodyFirstPersonController : MonoBehaviour
     {
+        public GameObject _Controller;
+        public bool gameHasNotBegun = true;// Prevent input when in main menu
+
         [Serializable]
         public class MovementSettings
         {
@@ -26,6 +31,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
             public void UpdateDesiredTargetSpeed(Vector2 input)
             {
+
 	            if (input == Vector2.zero) return;
 				if (input.x > 0 || input.x < 0)
 				{
@@ -123,11 +129,15 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_RigidBody = GetComponent<Rigidbody>();
             m_Capsule = GetComponent<CapsuleCollider>();
             mouseLook.Init (transform, cam.transform);
+            UnityEngine.Assertions.Assert.IsNotNull(_Controller);
         }
 
 
         private void Update()
         {
+            if(gameHasNotBegun)
+                return;
+
             RotateView();
 
             if(CrossPlatformInputManager.GetButtonDown("Jump") && !m_Jump)
@@ -142,10 +152,15 @@ namespace UnityStandardAssets.Characters.FirstPerson
             if(Physics.Raycast(m_RigidBody.position, m_RigidBody.transform.forward, out hit))
             {
                 Debug.Log("Hit:" + hit.transform.tag + "      name:"+hit.transform.gameObject.name);
-                if(hit.transform.tag == "TRIGGER")
+                if(hit.transform.tag == "Trigger_One")
                 {
                     Debug.Log("Trigger");
+                    _Controller.SendMessage("Trigger_One", null, SendMessageOptions.RequireReceiver);
 
+                }
+                else
+                {
+                    //_Controller.SendMessage("Triggers_Off", null, SendMessageOptions.RequireReceiver);
                 }
             }
         }
@@ -153,6 +168,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void FixedUpdate()
         {
+            if(gameHasNotBegun)
+                return;
+
             GroundCheck();
             Vector2 input = GetInput();
 

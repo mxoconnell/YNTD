@@ -20,7 +20,7 @@ public class YNTD_Underwater : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        isUnderWater = (player.transform.position.y <= 1.1);
+        isUnderWater = (player.transform.position.y > -1 && player.transform.position.y <= 1.1);
         blur.enabled = isUnderWater;
 	}
 }
