@@ -130,9 +130,23 @@ namespace UnityStandardAssets.Characters.FirstPerson
         {
             RotateView();
 
-            if (CrossPlatformInputManager.GetButtonDown("Jump") && !m_Jump)
+            if(CrossPlatformInputManager.GetButtonDown("Jump") && !m_Jump)
             {
                 m_Jump = true;
+            }
+
+
+            Debug.DrawRay(m_RigidBody.position, m_RigidBody.transform.forward, Color.magenta);
+
+            RaycastHit hit;
+            if(Physics.Raycast(m_RigidBody.position, m_RigidBody.transform.forward, out hit))
+            {
+                Debug.Log("Hit:" + hit.transform.tag + "      name:"+hit.transform.gameObject.name);
+                if(hit.transform.tag == "TRIGGER")
+                {
+                    Debug.Log("Trigger");
+
+                }
             }
         }
 
