@@ -151,10 +151,10 @@ namespace UnityStandardAssets.Characters.FirstPerson
             RaycastHit hit;
             if(Physics.Raycast(m_RigidBody.position, m_RigidBody.transform.forward, out hit))
             {
-                Debug.Log("Hit:" + hit.transform.tag + "      name:"+hit.transform.gameObject.name);
+                //Debug.Log("Hit:" + hit.transform.tag + "      name:"+hit.transform.gameObject.name);
                 if(hit.transform.tag == "Trigger_One")
                 {
-                    Debug.Log("Trigger");
+                    //Debug.Log("Trigger");
                     _Controller.SendMessage("Trigger_One", null, SendMessageOptions.RequireReceiver);
 
                 }

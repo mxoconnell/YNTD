@@ -1,30 +1,28 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.Assertions;
+using System;
 
 public class YNTD_Controller : MonoBehaviour {
-    [SerializeField] private UnityEngine.UI.Text title;
-    [SerializeField] private UnityEngine.UI.Text credit;
-    [SerializeField] private UnityEngine.UI.Text prompt;
     [SerializeField] private UnityStandardAssets.Characters.FirstPerson.RigidbodyFirstPersonController FPSController;
-    [SerializeField] private YNTD_textController textController;
+    [SerializeField] private YNTD_textController txtTitle;
+    [SerializeField] private YNTD_textController txtCredit;
+    [SerializeField] private YNTD_textController txtPrompt;
     /*
      *  0 = before they begin game (main menu
      *  1 = After they begin the game 
      */
     int state = 0;
-    bool isDisplayingInputPrompt = true; //Start with prompt: "E to begin game"
-    bool triggerOne = false; // Is the bottle by the pool being actively observed?
+    bool isDisplayingInputPrompt = true; // Start with prompt: "E to begin game"
+    bool triggerOne = false;             // Is the bottle by the pool being actively observed?
+    DateTime timeOfLastPrompt;           // This tracks the last time we were told to keep the prompt up. If it's been a second, we'll turn it off.
 
     // Use this for initialization
     void Start () {
-        Assert.IsNotNull(title);
-        Assert.IsNotNull(credit);
-        Assert.IsNotNull(prompt);
-
-        title.gameObject.SetActive(true);
-        credit.gameObject.SetActive(true);
-        prompt.gameObject.SetActive(true);
+        Assert.IsNotNull(FPSController);
+        Assert.IsNotNull(txtTitle);
+        Assert.IsNotNull(txtCredit);
+        Assert.IsNotNull(txtPrompt);
     }
 	
 	// Update is called once per frame
@@ -33,12 +31,16 @@ public class YNTD_Controller : MonoBehaviour {
         // If we should display the input then...
         if(isDisplayingInputPrompt){
             // display it =)
-            textController.SetFadingIn(true);
+            Debug.Log("Fading in");
+            txtPrompt.SetFadingIn(true);
         }
-        // But if not...
-        else{
+
+        // If it's been greater than n seconds, lets start turning it off
+        if(state != 0 && (DateTime.Now-timeOfLastPrompt).TotalSeconds > 1){
             // Let's make it fade away
-            textController.SetFadingIn(false);
+            isDisplayingInputPrompt = false;
+            txtPrompt.SetFadingIn(false);
+            Debug.Log("Fading out");
         }
 
         if(Input.GetKeyDown(KeyCode.E))
@@ -46,8 +48,8 @@ public class YNTD_Controller : MonoBehaviour {
             // If they press a key on main menu remove the title cards
             if(state == 0)
             {
-                title.gameObject.SetActive(false);
-                credit.gameObject.SetActive(false);
+                txtTitle.SetFadingIn(false);
+                txtCredit.SetFadingIn(false);
 
                 isDisplayingInputPrompt = false;
                 
@@ -72,9 +74,10 @@ public class YNTD_Controller : MonoBehaviour {
     // The bottle by the pool is being observed
     void Trigger_One()
     {
-        prompt.text = "Press  [E] to Drink";
+        txtPrompt.SetText("Press  [E] to Drink");
         isDisplayingInputPrompt = true;
         triggerOne = true; // TODO: when to turn this off?
+        timeOfLastPrompt = DateTime.Now;
     }
 
     // The bottle by the pool is being observed
