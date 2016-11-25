@@ -5,9 +5,16 @@ using System;
 
 public class YNTD_Controller : MonoBehaviour {
     [SerializeField] private UnityStandardAssets.Characters.FirstPerson.RigidbodyFirstPersonController FPSController;
+
+    // UI Text
     [SerializeField] private YNTD_textController txtTitle;
     [SerializeField] private YNTD_textController txtCredit;
     [SerializeField] private YNTD_textController txtPrompt;
+
+    // Audio
+    [SerializeField] private AudioSource soundEffects;
+    [SerializeField] private AudioSource soundEffects;
+
     /*
      *  0 = before they begin game (main menu
      *  1 = After they begin the game 
@@ -23,6 +30,7 @@ public class YNTD_Controller : MonoBehaviour {
         Assert.IsNotNull(txtTitle);
         Assert.IsNotNull(txtCredit);
         Assert.IsNotNull(txtPrompt);
+
     }
 	
 	// Update is called once per frame
