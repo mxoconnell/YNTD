@@ -4,16 +4,15 @@ using UnityEngine.Assertions;
 using System;
 
 public class YNTD_Controller : MonoBehaviour {
+
+    // External Controllers
+    [SerializeField] private YNTD_AudioController AudioController;
     [SerializeField] private UnityStandardAssets.Characters.FirstPerson.RigidbodyFirstPersonController FPSController;
 
     // UI Text
     [SerializeField] private YNTD_textController txtTitle;
     [SerializeField] private YNTD_textController txtCredit;
     [SerializeField] private YNTD_textController txtPrompt;
-
-    // Audio
-    [SerializeField] private AudioSource soundEffects;
-    [SerializeField] private AudioSource soundEffects;
 
     /*
      *  0 = before they begin game (main menu
@@ -105,6 +104,7 @@ public class YNTD_Controller : MonoBehaviour {
     // Blur camera a for a short moment to simulate drunkeness and make a sound of drinking
     void DrinkAlcohol()
     {
-
+        // TODO: Blur
+        AudioController.PlaySound(YNTD_AudioController.Sounds.SE_Gulp);
     }
 }
