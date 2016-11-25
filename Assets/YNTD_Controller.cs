@@ -22,6 +22,7 @@ public class YNTD_Controller : MonoBehaviour {
     bool isDisplayingInputPrompt = true; // Start with prompt: "E to begin game"
     bool triggerOne = false;             // Is the bottle by the pool being actively observed?
     DateTime timeOfLastPrompt;           // This tracks the last time we were told to keep the prompt up. If it's been a second, we'll turn it off.
+    bool isPoolLightingUp = false;
 
     // Use this for initialization
     void Start () {
@@ -96,8 +97,37 @@ public class YNTD_Controller : MonoBehaviour {
     }
 
     // Makes the light in the water's intensity increase then die back down
-    void FlareUpLightInWater()
+    IEnumerator FlareUpLightInWater()
     {
+        // If we are already lighting up let's make a hard restart
+        if(isPoolLightingUp)
+            StopAllCoroutines();
+
+        //TODO make these real hooks
+        float probeIntensity = 0;
+        float pointLightIntensity = 0;
+        
+
+        // We are scaling two things to two different maximum intensities
+        float LIGHT_PROBE_MAX_INTENSITY = 20;
+        float POINT_LIGHT_MAX_INTENSITY = 2;
+        float dIntensity = .02f;
+        
+        // Turn lights on
+        while(probeIntensity < LIGHT_PROBE_MAX_INTENSITY || pointLightIntensity < POINT_LIGHT_MAX_INTENSITY)
+        {
+            probeIntensity += dIntensity*10;
+            pointLightIntensity += dIntensity;
+            yield return new WaitForSeconds(0.01f);
+        }
+
+        // Turn em off
+        while(probeIntensity > 0 || pointLightIntensity > 0)
+        {
+            probeIntensity -= dIntensity*10;
+            pointLightIntensity -= dIntensity;
+            yield return new WaitForSeconds(0.01f);
+        }
 
     }
 
