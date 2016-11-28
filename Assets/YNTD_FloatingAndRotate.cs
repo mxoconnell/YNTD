@@ -13,6 +13,7 @@ public class YNTD_FloatingAndRotate : MonoBehaviour {
 
     public bool preventRotX = false;
     public bool preventRotY = false;
+    public bool preventTranslation = false;
 
 
     // Determines which way we are rotating (1 or -1)
@@ -35,7 +36,8 @@ public class YNTD_FloatingAndRotate : MonoBehaviour {
         //UnityEngine.Assertions.Assert.IsNotNull(mat);
         ColorUtility.TryParseHtmlString("#7F5920", out baseColor);
         curEmission = Random.Range(0, MAX_EMISSION);
-
+        isGlowingUp = (Random.value >= 0.5) ? -1 : 1;
+        Debug.Log(isGlowingUp);
         transform.position = new Vector3(transform.position.x, (float)minY, transform.position.z);
         transform.Rotate(new Vector3(Random.Range(-40, 40), Random.Range(-40, 40), Random.Range(-40,40)));
     }
@@ -45,7 +47,8 @@ public class YNTD_FloatingAndRotate : MonoBehaviour {
 
         // UP AND DOWN
         double dY = goingUp ? mydY : -mydY;
-        transform.position = new Vector3(transform.position.x, transform.position.y + (float)dY, transform.position.z);
+        if(!preventTranslation)
+            transform.position = new Vector3(transform.position.x, transform.position.y + (float)dY, transform.position.z);
         if(transform.position.y > maxY || transform.position.y < minY)
             goingUp = !goingUp;
 
