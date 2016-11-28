@@ -19,6 +19,9 @@ public class YNTD_Controller : MonoBehaviour {
     [SerializeField] private Light poolLight;
     [SerializeField] private GameObject poolBarrier;
 
+    // Trigger 2 Vars
+    [SerializeField] private ReflectionProbe cavePoolProbe;
+
     // Blur variables (due to drinking)
     // blurActivated ? use MAXvelocity : use MINvelocity
     // We are increasing the MIN as we progress through game
@@ -163,6 +166,21 @@ public class YNTD_Controller : MonoBehaviour {
         DrinkAlcohol();
         StartCoroutine( FlareUpLightInWater());
         poolBarrier.SetActive(false);
+
+        //Debug:
+        StartCoroutine(UndergroundWaterEffects());
+    }
+
+    //Makes the water underground glow very bright and raises the height
+    IEnumerator UndergroundWaterEffects()
+    {
+        int maxIntensity = 70;
+        // Turn lights on
+        while(cavePoolProbe.intensity < maxIntensity)
+        {
+            cavePoolProbe.intensity += .2f;
+            yield return new WaitForSeconds(0.01f);
+        }
     }
 
     // Makes the light in the water's intensity increase then die back down
