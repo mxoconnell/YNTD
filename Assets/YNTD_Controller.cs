@@ -89,10 +89,7 @@ public class YNTD_Controller : MonoBehaviour {
         blurScript.velocityScale = curBlur;
 
 
-        // If we should display the input then...
         if(isDisplayingInputPrompt){
-            // display it =)
-            ///Debug.Log("Fading in");
             txtPrompt.SetFadingIn(true);
         }
 
@@ -138,9 +135,20 @@ public class YNTD_Controller : MonoBehaviour {
     }
 
     // The bottle by the pool is being observed
+    // This is called from the first person controller
     void Trigger_One()
     {
-        txtPrompt.SetText("Press  [E] to Drink");
+        txtPrompt.SetText("Press [E] to Drink");
+        isDisplayingInputPrompt = true;
+        triggerOne = true; // TODO: when to turn this off?
+        timeOfLastPrompt = DateTime.Now;
+    }
+
+    // The bottle by the cave is being observed
+    // This is called from the first person controller
+    void Trigger_Two()
+    {
+        txtPrompt.SetText("Press [E] to Drink");
         isDisplayingInputPrompt = true;
         triggerOne = true; // TODO: when to turn this off?
         timeOfLastPrompt = DateTime.Now;
@@ -226,7 +234,8 @@ public class YNTD_Controller : MonoBehaviour {
         //UI
         txtTitle.SetFadingIn(false);
         txtCredit.SetFadingIn(false);
-        isDisplayingInputPrompt = false;
+        txtPrompt.SetText("Press [E] to Begin");
+        isDisplayingInputPrompt = true;
 
         BLUR_TARGET_VELOCITY = 5;
         BLUR_MIN_VELOCITY = 5;

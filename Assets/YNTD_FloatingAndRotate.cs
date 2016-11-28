@@ -28,12 +28,11 @@ public class YNTD_FloatingAndRotate : MonoBehaviour {
     float curEmission = 0f;
     int isGlowingUp = 1; // 1 or -1
     Color baseColor = Color.yellow;
+    [SerializeField] private float MIN_EMISSION = -2;
 
     // Use this for initialization
     void Start () {
         // Glow vars
-        //Material mat = GetComponent<Renderer>().material;
-        //UnityEngine.Assertions.Assert.IsNotNull(mat);
         ColorUtility.TryParseHtmlString("#7F5920", out baseColor);
         curEmission = Random.Range(0, MAX_EMISSION);
         isGlowingUp = (Random.value >= 0.5) ? -1 : 1;
@@ -76,7 +75,7 @@ public class YNTD_FloatingAndRotate : MonoBehaviour {
         // Make it Glow
         if(curEmission >= MAX_EMISSION)
             isGlowingUp = -1;
-        else if(curEmission <= -2)
+        else if(curEmission <= MIN_EMISSION)
             isGlowingUp = 1;
 
         curEmission += (isGlowingUp * .05f);
