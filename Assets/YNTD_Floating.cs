@@ -21,4 +21,19 @@ public class YNTD_Floating : MonoBehaviour {
             goingUp = !goingUp;
 
     }
+
+    public void Sink()
+    {
+        goingUp = false;
+        mydY = .009f;
+        minY = -5;
+    }
+
+    public void Reset()
+    {
+        transform.position = new Vector3(transform.position.x, (float)minY, transform.position.z);
+        mydY = .0005f;
+        minY = 0;
+    }
+
 }

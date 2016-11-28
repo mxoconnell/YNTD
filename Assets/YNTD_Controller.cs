@@ -37,7 +37,7 @@ public class YNTD_Controller : MonoBehaviour {
     float shake_intensity;
 
     // Misc
-    [SerializeField] private GameObject poolCorpse;
+    [SerializeField] private YNTD_Floating poolCorpseController;
 
     /*
      *  0 = before they begin game (main menu
@@ -122,7 +122,7 @@ public class YNTD_Controller : MonoBehaviour {
                 BLUR_MIN_VELOCITY = 5;
 
                 // Remove the body in pool, if present
-                poolCorpse.transform.
+                poolCorpseController.Sink();
 
                 // Enable the player to move around
                 FPSController.gameHasNotBegun = false;
@@ -217,5 +217,22 @@ public class YNTD_Controller : MonoBehaviour {
         originRotation = transform.rotation;
         shake_intensity = 500f;
         shake_decay = 0.002f;
+    }
+
+    // Bring player back to the begining but add the body
+    void RestartGame()
+    {
+        state = 0;
+        poolBarrier.SetActive(true);
+        poolCorpseController.gameObject.SetActive(true);
+        poolCorpseController.Reset();
+
+        //UI
+        txtTitle.SetFadingIn(false);
+        txtCredit.SetFadingIn(false);
+        isDisplayingInputPrompt = false;
+
+        BLUR_TARGET_VELOCITY = 5;
+        BLUR_MIN_VELOCITY = 5;
     }
 }
