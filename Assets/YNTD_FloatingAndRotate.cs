@@ -11,6 +11,10 @@ public class YNTD_FloatingAndRotate : MonoBehaviour {
     public double mydY = .0005f;
     public bool goingUp = true;
 
+    public bool preventRotX = false;
+    public bool preventRotY = false;
+
+
     // Determines which way we are rotating (1 or -1)
     int isRotatingPositiveX = 1;
     int isRotatingPositiveY = 1;
@@ -38,8 +42,7 @@ public class YNTD_FloatingAndRotate : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        //InvokeRepeating("Rotate", 0, .01f);
-        ////Debug.Log(gameObject.name + " : " + gameObject.transform.position.y + "         " + gameObject.transform.rotation.eulerAngles.x);
+
         // UP AND DOWN
         double dY = goingUp ? mydY : -mydY;
         transform.position = new Vector3(transform.position.x, transform.position.y + (float)dY, transform.position.z);
@@ -52,6 +55,10 @@ public class YNTD_FloatingAndRotate : MonoBehaviour {
             isRotatingPositiveY *= -1;
 
         // ROUND AND ROUND (rotating to max/min of 40/-40)
+        if(preventRotX)
+            isRotatingPositiveX = 0;
+        if(preventRotX)
+            isRotatingPositiveY = 0;
         transform.Rotate(new Vector3(isRotatingPositiveX, isRotatingPositiveY, isRotatingPositiveZ) * Time.deltaTime * 20);
 
         // Determine if we need to change rotations
@@ -75,11 +82,6 @@ public class YNTD_FloatingAndRotate : MonoBehaviour {
         mat.SetColor("_EmissionColor", finalColor);
 
     }
-
-    /*IEnumerator Rotate()
-    {
-        yield break;
-    }*/
 
     public void Sink()
     {
