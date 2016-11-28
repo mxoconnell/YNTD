@@ -14,9 +14,10 @@ public class YNTD_Controller : MonoBehaviour {
     [SerializeField] private YNTD_textController txtCredit;
     [SerializeField] private YNTD_textController txtPrompt;
 
-    // Pool Dyanic elements (stuff we flicker on Trigger1)
+    // Trigger 1 Vars
     [SerializeField] private ReflectionProbe poolProbe;
     [SerializeField] private Light poolLight;
+    [SerializeField] private GameObject poolBarrier;
 
     // Blur variables (due to drinking)
     // blurActivated ? use MAXvelocity : use MINvelocity
@@ -34,7 +35,10 @@ public class YNTD_Controller : MonoBehaviour {
     Quaternion originRotation;
     float shake_decay;
     float shake_intensity;
-     
+
+    // Misc
+    [SerializeField] private GameObject poolCorpse;
+
     /*
      *  0 = before they begin game (main menu
      *  1 = After they begin the game 
@@ -109,12 +113,16 @@ public class YNTD_Controller : MonoBehaviour {
             // If they press a key on main menu remove the title cards
             if(state == 0)
             {
+                //UI
                 txtTitle.SetFadingIn(false);
                 txtCredit.SetFadingIn(false);
-
                 isDisplayingInputPrompt = false;
+
                 BLUR_TARGET_VELOCITY = 5;
                 BLUR_MIN_VELOCITY = 5;
+
+                // Remove the body in pool, if present
+                poolCorpse.transform.
 
                 // Enable the player to move around
                 FPSController.gameHasNotBegun = false;
@@ -150,6 +158,7 @@ public class YNTD_Controller : MonoBehaviour {
         BLUR_MIN_VELOCITY += 5;
         DrinkAlcohol();
         StartCoroutine( FlareUpLightInWater());
+        poolBarrier.SetActive(false);
     }
 
     // Makes the light in the water's intensity increase then die back down
