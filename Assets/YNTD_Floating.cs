@@ -13,13 +13,11 @@ public class YNTD_Floating : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        //if(Random.Range(0, 10) > 5)
-        //    return;
+        ///Debug.Log(gameObject.name + " : " + gameObject.transform.position.y);
         double dY = goingUp ? mydY : -mydY;
         transform.Translate(Vector3.up * (float)dY, Space.World);
         if(transform.position.y > maxY || transform.position.y < minY)
             goingUp = !goingUp;
-
     }
 
     public void Sink()

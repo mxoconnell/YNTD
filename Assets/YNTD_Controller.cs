@@ -77,11 +77,7 @@ public class YNTD_Controller : MonoBehaviour {
             shake_intensity -= shake_decay;
         }
 
-
-
-
-
-        Debug.Log("curBlur:" + curBlur + "   |     BLUR_TARGET_VELOCITY:" + BLUR_TARGET_VELOCITY);
+        ///Debug.Log("curBlur:" + curBlur + "   |     BLUR_TARGET_VELOCITY:" + BLUR_TARGET_VELOCITY);
         // Determine which way to inlfuence the blur (due to alcohol)
         if(curBlur < BLUR_TARGET_VELOCITY-dBlur)
             curBlur += dBlur;
@@ -96,7 +92,7 @@ public class YNTD_Controller : MonoBehaviour {
         // If we should display the input then...
         if(isDisplayingInputPrompt){
             // display it =)
-            Debug.Log("Fading in");
+            ///Debug.Log("Fading in");
             txtPrompt.SetFadingIn(true);
         }
 
@@ -105,7 +101,7 @@ public class YNTD_Controller : MonoBehaviour {
             // Let's make it fade away
             isDisplayingInputPrompt = false;
             txtPrompt.SetFadingIn(false);
-            Debug.Log("Fading out");
+           ///Debug.Log("Fading out");
         }
 
         if(Input.GetKeyDown(KeyCode.E))
