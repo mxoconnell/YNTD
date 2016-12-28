@@ -23,7 +23,11 @@ public class YNTD_textController : MonoBehaviour {
         if(fadingIn && updatedColor.a<MAX_BRIGHTNESS)
             updatedColor.a = updatedColor.a + 0.02f;
         else
-            updatedColor.a = updatedColor.a - 0.01f;
+            updatedColor.a = updatedColor.a - 0.04f;
+
+        if(updatedColor.a > 1) updatedColor.a = 1;
+        if(updatedColor.a < 0) updatedColor.a = 0;
+
         text.color = updatedColor;
     }
 

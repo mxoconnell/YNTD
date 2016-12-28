@@ -9,18 +9,17 @@ public class YNTD_Underwater : MonoBehaviour {
 	// Use this for initialization
     public bool isUnderWater;
     UnityStandardAssets.ImageEffects.BlurOptimized blur;
-    [SerializeField] private GameObject player;
     [SerializeField] private GameObject camera;
     void Start () {
-        Assert.IsNotNull(player);
         Assert.IsNotNull(camera);
         blur = camera.GetComponent<UnityStandardAssets.ImageEffects.BlurOptimized>();
         Assert.IsNotNull(blur);
     }
-	
-	// Update is called once per frame
-	void Update () {
-        isUnderWater = (player.transform.position.y > -1 && player.transform.position.y <= 1.1);
-        blur.enabled = isUnderWater;
-	}
+
+    public void SetEnabled(bool isEnabled)
+    {
+        blur.enabled = isEnabled;
+    }
+
+
 }

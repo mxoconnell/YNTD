@@ -21,11 +21,14 @@ public class YNTD_Controller : MonoBehaviour {
 
     // Trigger 2 Vars
     [SerializeField] private ReflectionProbe cavePoolProbe;
+    [SerializeField] private GameObject cavePoolWater;
+    [SerializeField] private Fade cameraFade;
 
     // Blur variables (due to drinking)
     // blurActivated ? use MAXvelocity : use MINvelocity
     // We are increasing the MIN as we progress through game
-    UnityStandardAssets.ImageEffects.CameraMotionBlur blurScript;
+    UnityStandardAssets.ImageEffects.CameraMotionBlur motionBlurScript;
+    [SerializeField] private YNTD_Underwater waterBlurScript;
     static int BLUR_MAX_VELOCITY = 1000000;
     int BLUR_MIN_VELOCITY = 1;
     int BLUR_TARGET_VELOCITY = 1;
@@ -41,6 +44,9 @@ public class YNTD_Controller : MonoBehaviour {
 
     // Misc
     [SerializeField] private YNTD_Floating poolCorpseController;
+    Vector3 playerStartLocation;
+    Quaternion playerStartRotation;
+    Quaternion playerStartRotationCamera;
 
     /*
      *  0 = before they begin game (main menu
@@ -49,8 +55,10 @@ public class YNTD_Controller : MonoBehaviour {
     int state = 0;
     bool isDisplayingInputPrompt = true; // Start with prompt: "E to begin game"
     bool triggerOne = false;             // Is the bottle by the pool being actively observed?
+    bool triggerTwo = false;
     DateTime timeOfLastPrompt;           // This tracks the last time we were told to keep the prompt up. If it's been a second, we'll turn it off.
     bool isPoolLightingUp = false;
+    bool isDrowning = false; // are we under the rising cave water?
 
     // Use this for initialization
     void Start () {
@@ -61,8 +69,11 @@ public class YNTD_Controller : MonoBehaviour {
         Assert.IsNotNull(txtTitle);
         Assert.IsNotNull(txtCredit);
         Assert.IsNotNull(txtPrompt);
-        blurScript = FPSController.GetComponentInChildren<UnityStandardAssets.ImageEffects.CameraMotionBlur>();
-        Assert.IsNotNull(blurScript);
+        motionBlurScript = FPSController.GetComponentInChildren<UnityStandardAssets.ImageEffects.CameraMotionBlur>();
+        Assert.IsNotNull(motionBlurScript);
+        playerStartRotation = FPSController.gameObject.transform.rotation;
+        playerStartRotationCamera = FPSController.gameObject.GetComponentInChildren<Camera>().transform.rotation;
+        playerStartLocation = FPSController.gameObject.transform.position;
         curBlur = BLUR_TARGET_VELOCITY;
     }
 	
@@ -89,7 +100,7 @@ public class YNTD_Controller : MonoBehaviour {
         // For subtle changes
         if(Mathf.Abs(curBlur - BLUR_TARGET_VELOCITY) < dBlur)
             curBlur = BLUR_TARGET_VELOCITY;
-        blurScript.velocityScale = curBlur;
+        motionBlurScript.velocityScale = curBlur;
 
 
         if(isDisplayingInputPrompt){
@@ -131,9 +142,25 @@ public class YNTD_Controller : MonoBehaviour {
                 {
                     if(triggerOne)
                         Trigger_One_Activated();
+                    if(triggerTwo)
+                        Trigger_Two_Activated();
+
                 }
             }
         }
+
+        // Check what location-based ambient sound we should play based on player's y coord
+        // Outside by pool, above ground
+        if(FPSController.gameObject.transform.position.y > 2.45)
+            AudioController.PlaySound(YNTD_AudioController.Sounds.BG_AboveGround);
+        if(FPSController.gameObject.transform.position.y < 2.45 && FPSController.gameObject.transform.position.y > -.91)
+            AudioController.PlaySound(YNTD_AudioController.Sounds.BG_InWater);
+        if(FPSController.gameObject.transform.position.y < -.91)
+            AudioController.PlaySound(YNTD_AudioController.Sounds.BG_InCave);
+
+        // Determine if underwater blur
+        waterBlurScript.SetEnabled(isDrowning || FPSController.gameObject.transform.position.y > -1 && FPSController.gameObject.transform.position.y <= 1.1);
+
 
     }
 
@@ -153,11 +180,11 @@ public class YNTD_Controller : MonoBehaviour {
     {
         txtPrompt.SetText("Press [E] to Drink");
         isDisplayingInputPrompt = true;
-        triggerOne = true; // TODO: when to turn this off?
+        triggerTwo = true;
         timeOfLastPrompt = DateTime.Now;
     }
 
-    // The bottle by the pool is being observed
+    // The bottle by the pool is being observed and drunk
     void Trigger_One_Activated()
     {
         Debug.Log("YOU DRUNK IT!");
@@ -166,24 +193,45 @@ public class YNTD_Controller : MonoBehaviour {
         DrinkAlcohol();
         StartCoroutine( FlareUpLightInWater());
         poolBarrier.SetActive(false);
-
-        //Debug:
-        StartCoroutine(UndergroundWaterEffects());
     }
 
-    //Makes the water underground glow very bright and raises the height
-    IEnumerator UndergroundWaterEffects()
+    // The bottle underground is being observed and drunk
+    void Trigger_Two_Activated()
     {
+        Debug.Log("YOU DRUNK IT X2!");
+        BLUR_TARGET_VELOCITY = 30;
+        BLUR_MIN_VELOCITY += 10;
+        DrinkAlcohol();
+
+        poolBarrier.SetActive(true);
+        StartCoroutine(EndGameEffects());
+        // Drowning sounds !
+
+        
+    }
+
+
+    //Makes the water underground glow very bright and raises the height, this is for underground (used for trigger 2)
+    IEnumerator EndGameEffects()
+    {
+        // Water effects
         int maxIntensity = 70;
-        // Turn lights on
-        while(cavePoolProbe.intensity < maxIntensity)
+        float maxY = -.80f;
+        while(cavePoolWater.transform.position.y < maxY)
         {
             cavePoolProbe.intensity += .2f;
+            cavePoolWater.transform.position = new Vector3(cavePoolWater.transform.position.x, cavePoolWater.transform.position.y + .001f, cavePoolWater.transform.position.z);
             yield return new WaitForSeconds(0.01f);
         }
+        Debug.Log("Drowning now!");
+        // End Game
+        isDrowning = true;
+        AudioController.PlaySound(YNTD_AudioController.Sounds.SE_Drowned);
+        cameraFade.FadeToImage();
+        StartCoroutine(RestartGame());
     }
 
-    // Makes the light in the water's intensity increase then die back down
+    // Makes the light in the water's intensity increase then die back down, this is the light on the surface of water (used for trigger 1)
     IEnumerator FlareUpLightInWater()
     {
         // If we are already lighting up let's make a hard restart
@@ -242,20 +290,42 @@ public class YNTD_Controller : MonoBehaviour {
     }
 
     // Bring player back to the begining but add the body
-    void RestartGame()
+    IEnumerator RestartGame()
     {
+        yield return new WaitForSeconds(19f);
+        AudioController.KillSounds();
         state = 0;
+        isDrowning = false;
         poolBarrier.SetActive(true);
         poolCorpseController.gameObject.SetActive(true);
         poolCorpseController.Reset();
+        triggerOne = false;
+        triggerTwo = false;
+
+        cavePoolWater.transform.position = new Vector3(cavePoolWater.transform.position.x, -1.83f, cavePoolWater.transform.position.z); 
+
+        cameraFade.FadeFromImage();
+
+        FPSController.gameObject.transform.position = playerStartLocation;
+        FPSController.gameObject.transform.rotation = playerStartRotation;
+        FPSController.gameObject.GetComponentInChildren<Camera>().transform.rotation = playerStartRotationCamera;
+
+        FPSController.gameHasNotBegun = true;
+        txtPrompt.SetFadingIn(false);
+        poolProbe.intensity = 0;
+        poolLight.intensity = 0;
 
         //UI
-        txtTitle.SetFadingIn(false);
-        txtCredit.SetFadingIn(false);
+        yield return new WaitForSeconds(.5f);
+        txtTitle.SetFadingIn(true);
+        txtCredit.SetFadingIn(true);
+        txtPrompt.SetFadingIn(true);
         txtPrompt.SetText("Press [E] to Begin");
         isDisplayingInputPrompt = true;
 
+
         BLUR_TARGET_VELOCITY = 5;
         BLUR_MIN_VELOCITY = 5;
+
     }
 }

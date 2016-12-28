@@ -18,6 +18,7 @@ public class YNTD_Floating : MonoBehaviour {
         transform.Translate(Vector3.up * (float)dY, Space.World);
         if(transform.position.y > maxY || transform.position.y < minY)
             goingUp = !goingUp;
+        Debug.Log("mydy:" + mydY + "      miny:" + minY);
     }
 
     public void Sink()
@@ -29,9 +30,10 @@ public class YNTD_Floating : MonoBehaviour {
 
     public void Reset()
     {
+        Debug.Log("Reset");
         transform.position = new Vector3(transform.position.x, (float)minY, transform.position.z);
         mydY = .0005f;
-        minY = 0;
+        minY = 1.7059999704361;
     }
 
 }

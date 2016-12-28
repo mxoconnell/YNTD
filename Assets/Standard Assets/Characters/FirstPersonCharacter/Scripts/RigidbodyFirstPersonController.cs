@@ -151,12 +151,15 @@ namespace UnityStandardAssets.Characters.FirstPerson
             RaycastHit hit;
             if(Physics.Raycast(m_RigidBody.position, m_RigidBody.transform.forward, out hit))
             {
-                if(hit.transform.tag == "Trigger_One")
+                float distanceToTarget = Vector3.Distance(m_RigidBody.position, hit.transform.position);
+                print("" + hit.transform.gameObject.name + "dist:   " + distanceToTarget);
+
+                if(hit.transform.tag == "Trigger_One" && distanceToTarget < 1.5)
                 {
                     _Controller.SendMessage("Trigger_One", null, SendMessageOptions.RequireReceiver);
 
                 }
-                else if(hit.transform.tag == "Trigger_Two")
+                else if(hit.transform.tag == "Trigger_Two" && distanceToTarget < 4.5)
                 {
                     _Controller.SendMessage("Trigger_Two", null, SendMessageOptions.RequireReceiver);
                 }
