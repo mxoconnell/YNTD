@@ -48,6 +48,7 @@ public class YNTD_Controller : MonoBehaviour {
     Vector3 playerStartLocation;
     Quaternion playerStartRotation;
     Quaternion playerStartRotationCamera;
+    [SerializeField] private GameObject bottles;
 
     /*
      *  0 = before they begin game (main menu
@@ -60,6 +61,7 @@ public class YNTD_Controller : MonoBehaviour {
     DateTime timeOfLastPrompt;           // This tracks the last time we were told to keep the prompt up. If it's been a second, we'll turn it off.
     bool isPoolLightingUp = false;
     bool isDrowning = false; // are we under the rising cave water?
+ 
 
     // Use this for initialization
     void Start () {
@@ -228,6 +230,9 @@ public class YNTD_Controller : MonoBehaviour {
             cavePoolProbe.intensity += .2f;
             cavePoolWater.transform.position = new Vector3(cavePoolWater.transform.position.x, cavePoolWater.transform.position.y + .001f, cavePoolWater.transform.position.z);
             yield return new WaitForSeconds(0.01f);
+
+            // Their up/down script is based on y coord. so bottle can't float. 
+            //bottles.transform.position = new Vector3(bottles.transform.position.x, bottles.transform.position.y + .001f, bottles.transform.position.z);
 
             if(cavePoolWater.transform.position.y > maxY && !isDrowning)
             {
