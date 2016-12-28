@@ -24,7 +24,7 @@ public class YNTD_Floating : MonoBehaviour {
     public void Sink()
     {
         goingUp = false;
-        mydY = .009f;
+        mydY = .015f;
         minY = -5;
     }
 

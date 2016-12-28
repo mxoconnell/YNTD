@@ -44,6 +44,7 @@ public class YNTD_Controller : MonoBehaviour {
 
     // Misc
     [SerializeField] private YNTD_Floating poolCorpseController;
+    [SerializeField] private GameObject focalPoint;
     Vector3 playerStartLocation;
     Quaternion playerStartRotation;
     Quaternion playerStartRotationCamera;
@@ -75,6 +76,8 @@ public class YNTD_Controller : MonoBehaviour {
         playerStartRotationCamera = FPSController.gameObject.GetComponentInChildren<Camera>().transform.rotation;
         playerStartLocation = FPSController.gameObject.transform.position;
         curBlur = BLUR_TARGET_VELOCITY;
+
+        FPSController.gameObject.transform.LookAt(focalPoint.transform);
     }
 	
 	// Update is called once per frame
@@ -108,13 +111,15 @@ public class YNTD_Controller : MonoBehaviour {
         }
 
         // If it's been greater than n seconds, lets start turning it off
-        if(state != 0 && (DateTime.Now-timeOfLastPrompt).TotalSeconds > 1){
+        if(state != 0 && (DateTime.Now-timeOfLastPrompt).TotalMilliseconds > 300){
             // Let's make it fade away
             isDisplayingInputPrompt = false;
             txtPrompt.SetFadingIn(false);
            ///Debug.Log("Fading out");
         }
 
+        if(Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Q))
+            Application.Quit();
         if(Input.GetKeyDown(KeyCode.E))
         {
             // If they press a key on main menu remove the title cards
@@ -134,6 +139,7 @@ public class YNTD_Controller : MonoBehaviour {
                 // Enable the player to move around
                 FPSController.gameHasNotBegun = false;
                 state++;
+                FPSController.gameObject.transform.LookAt(focalPoint.transform);
             }
             else if (state == 1)
             {
@@ -215,20 +221,25 @@ public class YNTD_Controller : MonoBehaviour {
     IEnumerator EndGameEffects()
     {
         // Water effects
-        int maxIntensity = 70;
-        float maxY = -.80f;
-        while(cavePoolWater.transform.position.y < maxY)
+        int maxIntensity = 7;
+        float maxY = -.97f;
+        while(cavePoolWater.transform.position.y < 2)
         {
             cavePoolProbe.intensity += .2f;
             cavePoolWater.transform.position = new Vector3(cavePoolWater.transform.position.x, cavePoolWater.transform.position.y + .001f, cavePoolWater.transform.position.z);
             yield return new WaitForSeconds(0.01f);
+
+            if(cavePoolWater.transform.position.y > maxY && !isDrowning)
+            {
+                Debug.Log("Drowning now!");
+                // End Game
+                isDrowning = true;
+                AudioController.PlaySound(YNTD_AudioController.Sounds.SE_Drowned);
+                cameraFade.FadeToImage();
+                StartCoroutine(RestartGame());
+            }
         }
-        Debug.Log("Drowning now!");
-        // End Game
-        isDrowning = true;
-        AudioController.PlaySound(YNTD_AudioController.Sounds.SE_Drowned);
-        cameraFade.FadeToImage();
-        StartCoroutine(RestartGame());
+        
     }
 
     // Makes the light in the water's intensity increase then die back down, this is the light on the surface of water (used for trigger 1)
@@ -302,13 +313,14 @@ public class YNTD_Controller : MonoBehaviour {
         triggerOne = false;
         triggerTwo = false;
 
-        cavePoolWater.transform.position = new Vector3(cavePoolWater.transform.position.x, -1.83f, cavePoolWater.transform.position.z); 
+        cavePoolWater.transform.position = new Vector3(cavePoolWater.transform.position.x, -2.2f, cavePoolWater.transform.position.z); 
 
         cameraFade.FadeFromImage();
 
         FPSController.gameObject.transform.position = playerStartLocation;
         FPSController.gameObject.transform.rotation = playerStartRotation;
         FPSController.gameObject.GetComponentInChildren<Camera>().transform.rotation = playerStartRotationCamera;
+        FPSController.gameObject.transform.LookAt(focalPoint.transform);
 
         FPSController.gameHasNotBegun = true;
         txtPrompt.SetFadingIn(false);
@@ -326,6 +338,7 @@ public class YNTD_Controller : MonoBehaviour {
 
         BLUR_TARGET_VELOCITY = 5;
         BLUR_MIN_VELOCITY = 5;
+        StopAllCoroutines();
 
     }
 }

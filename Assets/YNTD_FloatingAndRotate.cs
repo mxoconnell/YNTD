@@ -37,7 +37,7 @@ public class YNTD_FloatingAndRotate : MonoBehaviour {
         curEmission = Random.Range(0, MAX_EMISSION);
         isGlowingUp = (Random.value >= 0.5) ? -1 : 1;
         Debug.Log(isGlowingUp);
-        transform.position = new Vector3(transform.position.x, (float)minY, transform.position.z);
+        transform.position = new Vector3(transform.position.x, (float)Random.Range((float)minY, (float)maxY), transform.position.z);
         transform.Rotate(new Vector3(Random.Range(-40, 40), Random.Range(-40, 40), Random.Range(-40,40)));
     }
 	

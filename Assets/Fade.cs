@@ -33,6 +33,7 @@ public class Fade : MonoBehaviour {
     public void FadeToImage()
     {
         isFading = true;
+        fadeSpeed = 0.009f;
         fadeDir = -1;
     }
     public void FadeFromImage()
